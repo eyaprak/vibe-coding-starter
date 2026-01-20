@@ -179,6 +179,9 @@ DO NOT flag:
 - Type safety nitpicks
 - Performance micro-optimizations
 - "Best practices" that aren't critical
+- API model names or versions (e.g., claude-sonnet-4-20250514 is valid)
+- Package versions or dependencies
+- Configuration values you're unsure about
 
 ## Pull Request Information
 
