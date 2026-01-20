@@ -470,6 +470,38 @@ async function postReview(review: ReviewResponse, files: PRFile[]): Promise<void
     event = "APPROVE";
   }
 
+  // Dismiss previous "changes requested" reviews from this bot if we're now approving
+  if (event === "APPROVE" || event === "COMMENT") {
+    try {
+      const { data: reviews } = await octokit.pulls.listReviews({
+        owner: REPO_OWNER!,
+        repo: REPO_NAME!,
+        pull_number: PR_NUMBER,
+      });
+
+      // Find previous REQUEST_CHANGES reviews from github-actions bot
+      const pendingChangesReviews = reviews.filter(
+        (r) =>
+          r.state === "CHANGES_REQUESTED" &&
+          (r.user?.login === "github-actions[bot]" || r.user?.type === "Bot")
+      );
+
+      for (const review of pendingChangesReviews) {
+        await octokit.pulls.dismissReview({
+          owner: REPO_OWNER!,
+          repo: REPO_NAME!,
+          pull_number: PR_NUMBER,
+          review_id: review.id,
+          message: "Issues have been resolved. Dismissing previous review.",
+        });
+        console.log(`Dismissed previous review #${review.id}`);
+      }
+    } catch (error) {
+      console.warn("Could not dismiss previous reviews:", error);
+      // Continue anyway - not critical
+    }
+  }
+
   // Submit the review
   try {
     await octokit.pulls.createReview({
