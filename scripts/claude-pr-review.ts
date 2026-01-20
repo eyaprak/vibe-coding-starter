@@ -148,31 +148,32 @@ function buildPrompt(prData: {
 
 ## Review Criteria
 
-Analyze the code changes for:
+Focus ONLY on serious issues that could break the application or cause security problems:
 
-1. **Code Quality**
-   - Logic errors and potential bugs
-   - Code smells and maintainability issues
-   - Proper error handling
-   - Code readability and clarity
+1. **Critical Bugs** (things that will actually break)
+   - Obvious logic errors that will cause crashes or incorrect behavior
+   - Null/undefined access that will throw runtime errors
+   - Infinite loops or recursion
 
-2. **Security**
-   - SQL injection, XSS, command injection vulnerabilities
-   - Improper authentication/authorization
-   - Sensitive data exposure
-   - OWASP Top 10 vulnerabilities
+2. **Security Vulnerabilities** (actual exploitable issues)
+   - SQL injection with user input directly in queries
+   - XSS with unsanitized user content rendered as HTML
+   - Exposed secrets or credentials in code
+   - Authentication bypasses
 
-3. **Performance**
-   - Inefficient algorithms or data structures
-   - Memory leaks
-   - N+1 query problems
-   - Unnecessary re-renders (React)
+3. **Data Loss Risks**
+   - Deleting data without confirmation
+   - Overwriting files without backup
+   - Race conditions that corrupt data
 
-4. **Best Practices**
-   - TypeScript type safety
-   - React/Next.js conventions
-   - Proper async/await usage
-   - Code organization and architecture
+DO NOT flag:
+- Code style preferences or formatting
+- "Could be improved" suggestions
+- Theoretical edge cases that are unlikely
+- Missing error handling for internal code
+- Type safety nitpicks
+- Performance micro-optimizations
+- "Best practices" that aren't critical
 
 ## Pull Request Information
 
@@ -203,14 +204,14 @@ Respond with a valid JSON object (no markdown code blocks) in this exact format:
 }
 
 Guidelines for your response:
-- Set "approved" to false if there are any critical issues
-- Only include comments for actual issues found - don't create comments just to have something
-- Use "critical" for bugs, security issues, or breaking changes
-- Use "warning" for code smells, performance issues, or potential problems
-- Use "suggestion" for style improvements or minor enhancements
-- The "line" should be a line number from the diff that appears in the added lines (lines starting with +)
-- Be specific and actionable in your feedback
-- If the PR looks good with no issues, set approved to true and leave comments empty`;
+- BE LENIENT: Most PRs should be approved. Only block for serious issues.
+- Set "approved" to false ONLY if there are critical bugs or security vulnerabilities that WILL cause problems
+- Use "critical" SPARINGLY - only for bugs that will definitely break things or security holes
+- Use "warning" for issues that are concerning but not blocking
+- Skip "suggestion" entirely - we don't want nitpicks
+- If the code works and is reasonably safe, approve it even if it's not perfect
+- When in doubt, approve. Contributors can always improve later.
+- Empty comments array is perfectly fine - it means the code is good!`;
 }
 
 // Parse Claude's response
@@ -282,17 +283,19 @@ async function postReview(review: ReviewResponse, files: PRFile[]): Promise<void
   let body = `## 🤖 Claude Code Review\n\n`;
   body += `${review.summary}\n\n`;
 
-  if (review.comments.length > 0) {
-    body += `### Summary\n`;
-    body += `- 🚨 Critical: ${criticalCount}\n`;
-    body += `- ⚠️ Warnings: ${warningCount}\n`;
-    body += `- 💡 Suggestions: ${suggestionCount}\n\n`;
+  if (criticalCount > 0 || warningCount > 0) {
+    body += `### Issues Found\n`;
+    if (criticalCount > 0) body += `- 🚨 Critical: ${criticalCount}\n`;
+    if (warningCount > 0) body += `- ⚠️ Warnings: ${warningCount}\n`;
+    body += `\n`;
   }
 
-  if (review.approved) {
-    body += `✅ **This PR looks good to merge!**\n`;
+  if (criticalCount > 0) {
+    body += `❌ **Changes requested** - Please fix the critical issues before merging.\n`;
+  } else if (warningCount > 0) {
+    body += `✅ **Approved with notes** - Consider addressing the warnings, but OK to merge.\n`;
   } else {
-    body += `❌ **Changes requested - please address the issues above.**\n`;
+    body += `✅ **Looks good!** - No issues found.\n`;
   }
 
   body += `\n---\n*Powered by Claude AI*`;
@@ -359,14 +362,17 @@ async function postReview(review: ReviewResponse, files: PRFile[]): Promise<void
     }
   }
 
-  // Determine review event
+  // Determine review event - only block on critical issues
   let event: "APPROVE" | "REQUEST_CHANGES" | "COMMENT";
-  if (review.approved && review.comments.length === 0) {
-    event = "APPROVE";
-  } else if (!review.approved || criticalCount > 0) {
+  if (criticalCount > 0) {
+    // Only block merge for critical issues
     event = "REQUEST_CHANGES";
-  } else {
+  } else if (warningCount > 0) {
+    // Warnings are just comments, don't block
     event = "COMMENT";
+  } else {
+    // No issues or just suggestions - approve
+    event = "APPROVE";
   }
 
   // Submit the review
