@@ -307,7 +307,9 @@ async function ensureLabel(label: { name: string; color: string; description: st
 
 // Update PR labels based on review result
 async function updateLabels(event: "APPROVE" | "REQUEST_CHANGES"): Promise<void> {
-  const allLabels = [LABELS.approved, LABELS.changesRequested];
+  // Include legacy label for cleanup
+  const legacyLabel = { name: "claude:reviewed", color: "1d76db", description: "" };
+  const allLabels = [LABELS.approved, LABELS.changesRequested, legacyLabel];
 
   // Determine which label to add
   const labelToAdd = event === "APPROVE" ? LABELS.approved : LABELS.changesRequested;
