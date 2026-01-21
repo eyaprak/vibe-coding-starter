@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "setup": "node scripts/setup-template.js",
     "dev": "set NODE_OPTIONS=--max-http-header-size=16384 && next dev --turbopack",
     "build": "prisma generate && next build",
     "start": "set NODE_OPTIONS=--max-http-header-size=16384 && next start",
