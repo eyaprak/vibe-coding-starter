@@ -3,3 +3,8 @@
 .github/workflows/claude-review.yml merge=ours
 .github/workflows/template-cleanup.yml merge=ours
 scripts/claude-pr-review.ts merge=ours
+
+# Protect package-lock.json from fork cleanup changes
+# Main repo has extra devDependencies (@anthropic-ai/sdk, @octokit/rest)
+# that are removed in forks. Keep main repo's version during merges.
+package-lock.json merge=ours

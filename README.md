@@ -402,6 +402,19 @@ npm run start
 
 Katkılarınızı bekliyoruz! Lütfen bir issue açın veya pull request gönderin.
 
+### 📝 Pull Request Gönderirken Dikkat Edilmesi Gerekenler
+
+**Yeni npm paketi eklediyseniz:**
+- PR açıklamasında hangi paketleri eklediğinizi belirtin
+- `package.json` değişikliklerinizi açıklayın
+- **Not:** `package-lock.json` değişiklikleri merge sırasında otomatik olarak yönetilir
+
+**package-lock.json hakkında:**
+- Fork/clone yaptığınızda `npm run setup` çalıştırırsanız, bazı devDependencies kaldırılır
+- Bu normal bir durumdur ve `package-lock.json`'ınız farklı olacaktır
+- PR merge edilirken ana repository'nin `package-lock.json` dosyası korunur
+- Yeni paket eklemeleriniz `package.json` üzerinden tespit edilir ve merge sonrası yüklenir
+
 ## Lisans
 
 MIT Lisansı - bu starter'ı herhangi bir proje için kullanmakta özgürsünüz.
