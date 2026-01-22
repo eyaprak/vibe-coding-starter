@@ -1,0 +1,91 @@
+/**
+ * ============================================
+ * TEMPLATE: Prisma Schema Extensions
+ * ============================================
+ *
+ * Bu dosya, mevcut Prisma schema'ya eklenecek modeller içerir.
+ *
+ * Modeller:
+ * - ✅ Subscription (Stripe abonelikleri)
+ * - ✅ Invoice (Fatura geçmişi)
+ * - ✅ AuditLog (Admin işlemleri log'ları)
+ *
+ * Kurulum:
+ * 1. Bu modelleri prisma/schema.prisma dosyanıza ekleyin
+ * 2. npm run db:push
+ * 3. npm run db:generate
+ *
+ * @see templates/database-schema-templates/PROMPT.md
+ * ============================================
+ */
+
+// ============================================
+// MODEL: Subscription
+// ============================================
+// Kullanıcı abonelik bilgileri (Stripe entegrasyonu)
+
+model Subscription {
+  id                    String    @id @default(cuid())
+  userId                String
+  stripeCustomerId      String    @unique
+  stripeSubscriptionId  String    @unique
+  stripePriceId         String
+  status                String
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+// ============================================
+// MODEL: Invoice
+// ============================================
+// Fatura geçmişi
+
+model Invoice {
+  id              String    @id @default(cuid())
+  userId          String
+  stripeInvoiceId String    @unique
+  amount          Int
+  currency        String
+  status          String
+  dueDate         DateTime
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+// ============================================
+// MODEL: AuditLog
+// ============================================
+// Admin işlemleri log'ları
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  entity      String
+  entityId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// ============================================
+// USER MODEL RELATIONS UPDATE
+// ============================================
+// Mevcut User model'inize bu relation'ları ekleyin:
+
+// User modelinin içine ekleyin:
+// subscriptions Subscription[]
+// invoices      Invoice[]
