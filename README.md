@@ -142,6 +142,8 @@ Giriş sayfası template'ini projeme entegre eder misin? Şunları da yap:
 
 ### Kurulum
 
+> **📌 Not:** Bu repository'i **fork** ederseniz, otomatik temizleme workflow'u çalışır ve template dosyalarını kaldırır. Ancak **clone** (kopyalama) yaparsanız, aşağıdaki **Adım 2**'yi mutlaka manuel olarak çalıştırmalısınız.
+
 **1. Depoyu klonlayın:**
 
 ```bash
