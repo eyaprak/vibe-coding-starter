@@ -149,25 +149,33 @@ git clone https://github.com/eyaprak/vibe-coding-starter.git
 cd vibe-coding-starter
 ```
 
-2. **Öncelikle template kurulum scriptini çalıştırın** (şablon dosyalarını temizler):
+**2. ⚠️ ÖNEMLİ: Template temizleme scriptini çalıştırın:**
+
+> **MUTLAKA YAPILMASI GEREKIR!** Bu script, sadece ana repository için gerekli olan GitHub Action workflow'larını ve review script'lerini kaldırır. Eğer bu adımı atlanırsa, gereksiz dosyalar projenizde kalacaktır.
 
 ```bash
 npm run setup
 ```
 
-3. Bağımlılıkları yükleyin:
+**Bu script şunları kaldırır:**
+- `.github/workflows/claude-review.yml` - Claude AI PR review workflow (ana repo için)
+- `.github/workflows/template-cleanup.yml` - Otomatik temizleme workflow
+- `scripts/claude-pr-review.ts` - PR review script
+- İlgili devDependencies (`@anthropic-ai/sdk`, `@octokit/rest`)
+
+**3. Bağımlılıkları yükleyin:**
 
 ```bash
 npm install
 ```
 
-4. Ortam değişkenleri dosyasını kopyalayın:
+**4. Ortam değişkenleri dosyasını kopyalayın:**
 
 ```bash
 cp .env.example .env
 ```
 
-5. `.env` dosyasında ortam değişkenlerinizi yapılandırın:
+**5. `.env` dosyasında ortam değişkenlerinizi yapılandırın:**
    - Veritabanı URL'i (Supabase PostgreSQL)
    - Supabase kimlik bilgileri
    - NextAuth gizli anahtarı
@@ -175,13 +183,13 @@ cp .env.example .env
    - Resend API anahtarı
    - reCAPTCHA anahtarları
 
-6. Veritabanı şemasını gönderin:
+**6. Veritabanı şemasını gönderin:**
 
 ```bash
 npm run db:push
 ```
 
-7. Geliştirme sunucusunu başlatın:
+**7. Geliştirme sunucusunu başlatın:**
 
 ```bash
 npm run dev
