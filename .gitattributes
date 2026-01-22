@@ -1,0 +1,5 @@
+# Protect workflow files from being deleted during merges from forks
+# These files should always be preserved in the main repository
+.github/workflows/claude-review.yml merge=ours
+.github/workflows/template-cleanup.yml merge=ours
+scripts/claude-pr-review.ts merge=ours
