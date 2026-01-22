@@ -91,7 +91,7 @@ export default function Home() {
             </Button>
             <Button variant="outline" size="lg" asChild>
               <a
-                href="https://github.com/yourusername/vibe-coding-starter"
+                href="https://github.com/eyaprak/vibe-coding-starter"
                 target="_blank"
                 rel="noopener noreferrer"
               >
