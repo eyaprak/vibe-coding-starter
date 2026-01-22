@@ -149,19 +149,25 @@ git clone https://github.com/eyaprak/vibe-coding-starter.git
 cd vibe-coding-starter
 ```
 
-**2. Bağımlılıkları yükleyin:**
+2. **Öncelikle template kurulum scriptini çalıştırın** (şablon dosyalarını temizler):
+
+```bash
+npm run setup
+```
+
+3. Bağımlılıkları yükleyin:
 
 ```bash
 npm install
 ```
 
-**3. Ortam değişkenleri dosyasını kopyalayın:**
+4. Ortam değişkenleri dosyasını kopyalayın:
 
 ```bash
 cp .env.example .env
 ```
 
-**4. `.env` dosyasını yapılandırın:**
+5. `.env` dosyasında ortam değişkenlerinizi yapılandırın:
    - Veritabanı URL'i (Supabase PostgreSQL)
    - Supabase kimlik bilgileri
    - NextAuth gizli anahtarı
@@ -169,13 +175,13 @@ cp .env.example .env
    - Resend API anahtarı
    - reCAPTCHA anahtarları
 
-**5. Veritabanı şemasını gönderin:**
+6. Veritabanı şemasını gönderin:
 
 ```bash
 npm run db:push
 ```
 
-**6. Geliştirme sunucusunu başlatın:**
+7. Geliştirme sunucusunu başlatın:
 
 ```bash
 npm run dev
@@ -301,6 +307,7 @@ Profil sayfasına telefon numarası alanı eklemek istiyorum.
 
 | Komut                 | Açıklama                                   |
 | --------------------- | ------------------------------------------ |
+| `npm run setup`       | Template dosyalarını temizle (ilk kurulum) |
 | `npm run dev`         | Turbopack ile geliştirme sunucusunu başlat |
 | `npm run build`       | Production için derle                      |
 | `npm run start`       | Production sunucusunu başlat               |
